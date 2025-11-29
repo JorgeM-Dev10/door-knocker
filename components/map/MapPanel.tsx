@@ -193,12 +193,31 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
 
   const worldInfo = center ? getHemisphere(center.lat, center.lng) : null;
 
+  // Verificar si hay token de Mapbox
+  const hasMapboxToken = !!process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+
   return (
     <div className="relative h-full w-full min-h-[500px] bg-bg-card rounded-lg border border-border-dark overflow-hidden">
       {/* Map */}
+      {hasMapboxToken || (
+        <div className="absolute inset-0 flex items-center justify-center bg-bg-card z-10">
+          <div className="text-center p-4">
+            <div className="text-accent-red font-bold mb-2">Mapa no disponible</div>
+            <div className="text-text-secondary text-sm mb-2">
+              Configura NEXT_PUBLIC_MAPBOX_TOKEN en .env.local
+            </div>
+            <div className="text-text-secondary text-xs">
+              Obtén un token gratuito en: https://account.mapbox.com/access-tokens/
+            </div>
+          </div>
+        </div>
+      )}
       <Map
         {...viewState}
         onMove={(evt) => setViewState(evt.viewState)}
+        onLoad={() => {
+          setMapError(null);
+        }}
         onError={(e) => {
           console.error('Map error:', e);
           setMapError('Error al cargar el mapa. Verifica el token de Mapbox.');
@@ -207,7 +226,6 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
         style={{ width: '100%', height: '100%' }}
         mapStyle="mapbox://styles/mapbox/dark-v11"
         attributionControl={false}
-        projection={{ name: 'globe' } as any}
         minZoom={1}
         maxZoom={15}
         initialViewState={{
