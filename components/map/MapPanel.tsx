@@ -180,7 +180,7 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
         style={{ width: '100%', height: '100%' }}
         mapStyle="mapbox://styles/mapbox/satellite-streets-v12"
         attributionControl={false}
-        projection="globe"
+        projection={{ name: 'globe' }}
         minZoom={1}
         maxZoom={15}
       >
