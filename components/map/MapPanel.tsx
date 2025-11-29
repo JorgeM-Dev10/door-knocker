@@ -128,6 +128,7 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
     bearing: 0,
   });
   const [hoveredLead, setHoveredLead] = useState<Lead | null>(null);
+  const [mapError, setMapError] = useState<string | null>(null);
 
   useEffect(() => {
     if (center) {
@@ -198,13 +199,22 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
       <Map
         {...viewState}
         onMove={(evt) => setViewState(evt.viewState)}
+        onError={(e) => {
+          console.error('Map error:', e);
+          setMapError('Error al cargar el mapa. Verifica el token de Mapbox.');
+        }}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN || 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'}
         style={{ width: '100%', height: '100%' }}
         mapStyle="mapbox://styles/mapbox/dark-v11"
         attributionControl={false}
-        projection={{ name: 'globe' }}
+        projection={{ name: 'globe' } as any}
         minZoom={1}
         maxZoom={15}
+        initialViewState={{
+          longitude: 0,
+          latitude: 20,
+          zoom: 1.2,
+        }}
       >
         {/* Global Grid Lines (Lat/Lng) - Major Lines */}
         <Source id="global-grid-major" type="geojson" data={{
