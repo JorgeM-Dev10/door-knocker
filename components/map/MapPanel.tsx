@@ -507,6 +507,19 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
       <div className="absolute top-0 right-0 w-20 h-20 border-t-2 border-r-2 border-accent-cyan/50 z-20" />
       <div className="absolute bottom-0 left-0 w-20 h-20 border-b-2 border-l-2 border-accent-cyan/50 z-20" />
       <div className="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-accent-cyan/50 z-20" />
+
+      {/* Error Message */}
+      {mapError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-bg-card/95 z-30">
+          <div className="bg-bg-card-alt border border-accent-red rounded-lg p-4 max-w-md">
+            <div className="text-accent-red font-bold mb-2">Error de Mapa</div>
+            <div className="text-text-secondary text-sm">{mapError}</div>
+            <div className="text-text-secondary text-xs mt-2">
+              Configura NEXT_PUBLIC_MAPBOX_TOKEN en tu archivo .env.local
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
