@@ -36,7 +36,7 @@ function createCircleGeoJSON(center: { lat: number; lng: number }, radiusKm: num
   };
 }
 
-// Función para generar líneas de grid táctico
+// Función para generar líneas de grid táctico local
 function createGridLines(center: { lat: number; lng: number }, radiusKm: number) {
   const radiusInDegrees = radiusKm / 111;
   const lines: Array<{ type: 'Feature'; geometry: { type: 'LineString'; coordinates: [number, number][] } }> = [];
@@ -77,21 +77,71 @@ function createGridLines(center: { lat: number; lng: number }, radiusKm: number)
   };
 }
 
+// Función para generar líneas de latitud/longitud globales (tácticas)
+function createGlobalGridLines() {
+  const lines: Array<{ type: 'Feature'; geometry: { type: 'LineString'; coordinates: [number, number][] } }> = [];
+  
+  // Líneas de latitud principales (cada 30 grados)
+  for (let lat = -90; lat <= 90; lat += 30) {
+    lines.push({
+      type: 'Feature',
+      geometry: {
+        type: 'LineString',
+        coordinates: [
+          [-180, lat],
+          [180, lat],
+        ],
+      },
+    });
+  }
+  
+  // Líneas de longitud principales (cada 30 grados)
+  for (let lng = -180; lng <= 180; lng += 30) {
+    lines.push({
+      type: 'Feature',
+      geometry: {
+        type: 'LineString',
+        coordinates: [
+          [lng, -90],
+          [lng, 90],
+        ],
+      },
+    });
+  }
+  
+  return {
+    type: 'FeatureCollection' as const,
+    features: lines,
+  };
+}
+
 export default function MapPanel({ center, radius, leads, isScanning, location }: MapPanelProps) {
   const [viewState, setViewState] = useState({
-    longitude: center?.lng || -100.3161,
-    latitude: center?.lat || 25.6866,
-    zoom: 12,
+    longitude: center?.lng || 0, // Centro del mundo
+    latitude: center?.lat || 20, // Latitud media para vista global
+    zoom: center ? 6 : 1.5, // Zoom global inicial (1.5 muestra todo el mundo), más cercano si hay centro
+    pitch: 0,
+    bearing: 0,
   });
   const [hoveredLead, setHoveredLead] = useState<Lead | null>(null);
 
   useEffect(() => {
     if (center) {
-      setViewState({
+      // Zoom más cercano pero manteniendo contexto global (zoom 6-8)
+      setViewState((prev) => ({
+        ...prev,
         longitude: center.lng,
         latitude: center.lat,
-        zoom: 12,
-      });
+        zoom: Math.max(6, Math.min(8, prev.zoom || 6)),
+      }));
+    } else {
+      // Vista mundial completa
+      setViewState((prev) => ({
+        ...prev,
+        longitude: 0,
+        latitude: 20,
+        zoom: 1.5,
+      }));
     }
   }, [center]);
 
@@ -104,15 +154,20 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
     };
   }, [center, radius]);
 
-  // Generar grid táctico
+  // Generar grid táctico local
   const gridData = useMemo(() => {
     if (!center) return null;
     return createGridLines(center, radius);
   }, [center, radius]);
 
+  // Generar grid global (siempre visible)
+  const globalGridData = useMemo(() => {
+    return createGlobalGridLines();
+  }, []);
+
   // Calcular coordenadas para el HUD
   const coordinates = center
-    ? `${center.lat.toFixed(4)}°N, ${Math.abs(center.lng).toFixed(4)}°W`
+    ? `${center.lat >= 0 ? center.lat.toFixed(4) + '°N' : Math.abs(center.lat).toFixed(4) + '°S'}, ${center.lng >= 0 ? center.lng.toFixed(4) + '°E' : Math.abs(center.lng).toFixed(4) + '°W'}`
     : 'N/A';
 
   return (
@@ -123,17 +178,32 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
         onMove={(evt) => setViewState(evt.viewState)}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN || 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'}
         style={{ width: '100%', height: '100%' }}
-        mapStyle="mapbox://styles/mapbox/dark-v11"
+        mapStyle="mapbox://styles/mapbox/satellite-streets-v12"
         attributionControl={false}
+        projection="globe"
+        minZoom={1}
+        maxZoom={15}
       >
-        {/* Tactical Grid Overlay */}
+        {/* Global Grid Lines (Lat/Lng) */}
+        <Source id="global-grid" type="geojson" data={globalGridData}>
+          <Layer
+            id="global-grid-lines"
+            type="line"
+            paint={{
+              'line-color': 'rgba(62, 242, 255, 0.15)',
+              'line-width': 0.5,
+            }}
+          />
+        </Source>
+
+        {/* Tactical Grid Overlay (Local) */}
         {gridData && (
           <Source id="tactical-grid" type="geojson" data={gridData}>
             <Layer
               id="grid-lines"
               type="line"
               paint={{
-                'line-color': 'rgba(62, 242, 255, 0.2)',
+                'line-color': 'rgba(62, 242, 255, 0.3)',
                 'line-width': 1,
                 'line-dasharray': [2, 2],
               }}
