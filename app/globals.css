@@ -32,5 +32,78 @@
     border-color: rgba(255, 59, 59, 0.5);
     box-shadow: 0 0 10px rgba(255, 59, 59, 0.3);
   }
+
+  .glow-cyan {
+    box-shadow: 0 0 8px rgba(62, 242, 255, 0.6),
+                0 0 16px rgba(62, 242, 255, 0.3);
+  }
+}
+
+/* Tactical Map Animations */
+@keyframes radar-sweep {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.8;
+  }
+}
+
+@keyframes tactical-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes scan-line {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Map overlay effects */
+.map-tactical-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: 
+    linear-gradient(rgba(62, 242, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(62, 242, 255, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 10;
+}
+
+/* HUD Glitch effect */
+@keyframes glitch {
+  0%, 100% {
+    text-shadow: 0 0 2px rgba(62, 242, 255, 0.5);
+  }
+  25% {
+    text-shadow: -2px 0 2px rgba(255, 59, 59, 0.5), 2px 0 2px rgba(62, 242, 255, 0.5);
+  }
+  50% {
+    text-shadow: 2px 0 2px rgba(255, 59, 59, 0.5), -2px 0 2px rgba(62, 242, 255, 0.5);
+  }
+  75% {
+    text-shadow: 0 0 2px rgba(62, 242, 255, 0.5);
+  }
+}
+
+.hud-glitch {
+  animation: glitch 0.3s infinite;
 }
 

@@ -36,12 +36,54 @@ function createCircleGeoJSON(center: { lat: number; lng: number }, radiusKm: num
   };
 }
 
+// Función para generar líneas de grid táctico
+function createGridLines(center: { lat: number; lng: number }, radiusKm: number) {
+  const radiusInDegrees = radiusKm / 111;
+  const lines: Array<{ type: 'Feature'; geometry: { type: 'LineString'; coordinates: [number, number][] } }> = [];
+  
+  // Líneas horizontales (latitud)
+  for (let i = -3; i <= 3; i++) {
+    const lat = center.lat + (i * radiusInDegrees) / 3;
+    lines.push({
+      type: 'Feature',
+      geometry: {
+        type: 'LineString',
+        coordinates: [
+          [center.lng - radiusInDegrees, lat],
+          [center.lng + radiusInDegrees, lat],
+        ],
+      },
+    });
+  }
+  
+  // Líneas verticales (longitud)
+  for (let i = -3; i <= 3; i++) {
+    const lng = center.lng + (i * radiusInDegrees) / 3;
+    lines.push({
+      type: 'Feature',
+      geometry: {
+        type: 'LineString',
+        coordinates: [
+          [lng, center.lat - radiusInDegrees],
+          [lng, center.lat + radiusInDegrees],
+        ],
+      },
+    });
+  }
+  
+  return {
+    type: 'FeatureCollection' as const,
+    features: lines,
+  };
+}
+
 export default function MapPanel({ center, radius, leads, isScanning, location }: MapPanelProps) {
   const [viewState, setViewState] = useState({
     longitude: center?.lng || -100.3161,
     latitude: center?.lat || 25.6866,
     zoom: 12,
   });
+  const [hoveredLead, setHoveredLead] = useState<Lead | null>(null);
 
   useEffect(() => {
     if (center) {
@@ -62,6 +104,17 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
     };
   }, [center, radius]);
 
+  // Generar grid táctico
+  const gridData = useMemo(() => {
+    if (!center) return null;
+    return createGridLines(center, radius);
+  }, [center, radius]);
+
+  // Calcular coordenadas para el HUD
+  const coordinates = center
+    ? `${center.lat.toFixed(4)}°N, ${Math.abs(center.lng).toFixed(4)}°W`
+    : 'N/A';
+
   return (
     <div className="relative h-full bg-bg-card rounded-lg border border-border-dark overflow-hidden">
       {/* Map */}
@@ -73,28 +126,75 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
         mapStyle="mapbox://styles/mapbox/dark-v11"
         attributionControl={false}
       >
-        {/* Radar Circle */}
+        {/* Tactical Grid Overlay */}
+        {gridData && (
+          <Source id="tactical-grid" type="geojson" data={gridData}>
+            <Layer
+              id="grid-lines"
+              type="line"
+              paint={{
+                'line-color': 'rgba(62, 242, 255, 0.2)',
+                'line-width': 1,
+                'line-dasharray': [2, 2],
+              }}
+            />
+          </Source>
+        )}
+
+        {/* Radar Circle - Outer Ring */}
         {circleData && (
           <Source id="radar-circle" type="geojson" data={circleData}>
             <Layer
               id="radar-fill"
               type="fill"
               paint={{
-                'fill-color': 'rgba(255, 59, 59, 0.1)',
+                'fill-color': 'rgba(255, 59, 59, 0.08)',
               }}
             />
             <Layer
-              id="radar-stroke"
+              id="radar-stroke-outer"
               type="line"
               paint={{
-                'line-color': 'rgba(255, 59, 59, 0.5)',
+                'line-color': 'rgba(255, 59, 59, 0.6)',
                 'line-width': 2,
               }}
             />
           </Source>
         )}
 
-        {/* Lead Markers */}
+        {/* Radar Circle - Inner Ring (50% radius) */}
+        {circleData && center && (
+          <Source
+            id="radar-inner"
+            type="geojson"
+            data={{
+              type: 'FeatureCollection',
+              features: [createCircleGeoJSON(center, radius / 2)],
+            }}
+          >
+            <Layer
+              id="radar-inner-stroke"
+              type="line"
+              paint={{
+                'line-color': 'rgba(255, 59, 59, 0.3)',
+                'line-width': 1,
+                'line-dasharray': [4, 4],
+              }}
+            />
+          </Source>
+        )}
+
+        {/* Center Point Marker */}
+        {center && (
+          <Marker longitude={center.lng} latitude={center.lat} anchor="center">
+            <div className="relative">
+              <div className="w-4 h-4 rounded-full bg-accent-red border-2 border-white animate-pulse" />
+              <div className="absolute inset-0 w-4 h-4 rounded-full bg-accent-red animate-ping opacity-75" />
+            </div>
+          </Marker>
+        )}
+
+        {/* Lead Markers - Tactical Style */}
         {leads.map((lead) => (
           <Marker
             key={lead.id}
@@ -102,49 +202,173 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
             latitude={lead.lat}
             anchor="center"
           >
-            <div className="relative">
+            <div
+              className="relative cursor-pointer group"
+              onMouseEnter={() => setHoveredLead(lead)}
+              onMouseLeave={() => setHoveredLead(null)}
+            >
+              {/* Outer Ring */}
               <div
-                className="w-3 h-3 rounded-full bg-accent-red glow-red cursor-pointer"
+                className={`absolute inset-0 w-6 h-6 rounded-full border-2 transition-all ${
+                  hoveredLead?.id === lead.id
+                    ? 'border-accent-red animate-pulse'
+                    : 'border-accent-cyan/50'
+                }`}
                 style={{
-                  boxShadow: '0 0 8px rgba(255, 59, 59, 0.8), 0 0 16px rgba(255, 59, 59, 0.4)',
+                  transform: 'translate(-50%, -50%)',
+                  left: '50%',
+                  top: '50%',
                 }}
               />
+              {/* Inner Dot */}
+              <div
+                className={`w-3 h-3 rounded-full transition-all ${
+                  lead.score > 80
+                    ? 'bg-accent-red glow-red'
+                    : lead.score > 60
+                    ? 'bg-yellow-500'
+                    : 'bg-accent-cyan'
+                }`}
+                style={{
+                  boxShadow:
+                    hoveredLead?.id === lead.id
+                      ? '0 0 12px rgba(255, 59, 59, 1), 0 0 24px rgba(255, 59, 59, 0.6)'
+                      : '0 0 6px rgba(62, 242, 255, 0.6), 0 0 12px rgba(62, 242, 255, 0.3)',
+                }}
+              />
+              {/* Score Label (appears on hover) */}
+              {hoveredLead?.id === lead.id && (
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-bg-card/95 border border-accent-red rounded text-xs text-white whitespace-nowrap z-20">
+                  <div className="font-bold">{lead.score}</div>
+                  <div className="text-[10px] text-text-secondary">{lead.nombre}</div>
+                </div>
+              )}
             </div>
           </Marker>
         ))}
       </Map>
 
-      {/* Radar Animation Ring Overlay */}
+      {/* Tactical Grid Overlay (CSS) */}
+      <div
+        className="absolute inset-0 pointer-events-none z-10"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(62, 242, 255, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(62, 242, 255, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
+        }}
+      />
+
+      {/* Radar Sweep Animation */}
       {isScanning && center && (
-        <div
-          className="absolute pointer-events-none z-10"
-          style={{
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '200px',
-            height: '200px',
-            borderRadius: '50%',
-            border: '2px solid rgba(255, 59, 59, 0.6)',
-            animation: 'radar-sweep 2s ease-in-out infinite',
-          }}
-        />
+        <>
+          {/* Multiple expanding rings */}
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="absolute pointer-events-none z-10 rounded-full border-2 border-accent-red"
+              style={{
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: `${100 + i * 50}px`,
+                height: `${100 + i * 50}px`,
+                animation: `radar-sweep 2s ease-in-out infinite`,
+                animationDelay: `${i * 0.3}s`,
+                opacity: 0.6 - i * 0.2,
+              }}
+            />
+          ))}
+          {/* Scanning line */}
+          <div
+            className="absolute pointer-events-none z-10"
+            style={{
+              left: '50%',
+              top: '50%',
+              width: '2px',
+              height: '200px',
+              background: 'linear-gradient(to bottom, transparent, rgba(255, 59, 59, 0.8), transparent)',
+              transformOrigin: 'center',
+              animation: 'spin-slow 2s linear infinite',
+            }}
+          />
+        </>
       )}
 
-      {/* HUD Overlay */}
-      <div className="absolute bottom-4 left-4 bg-bg-card/90 backdrop-blur-sm border border-border-dark rounded-lg p-3 font-mono text-xs z-10">
+      {/* Top HUD - Coordinates & Info */}
+      <div className="absolute top-4 left-4 bg-bg-card/95 backdrop-blur-sm border border-accent-cyan/50 rounded-lg p-3 font-mono text-xs z-20">
         <div className="space-y-1">
+          <div className="text-accent-cyan uppercase tracking-wider text-[10px] mb-2">Tactical Grid</div>
           <div className="text-text-secondary">
-            Targets detected: <span className="text-accent-red font-bold">{leads.length}</span>
+            Coords: <span className="text-white font-bold">{coordinates}</span>
           </div>
           <div className="text-text-secondary">
-            Scan radius: <span className="text-white">{radius} km</span>
+            Zoom: <span className="text-white">{Math.round(viewState.zoom)}x</span>
+          </div>
+          <div className="text-text-secondary">
+            Bearing: <span className="text-white">0°</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom HUD - Mission Data */}
+      <div className="absolute bottom-4 left-4 bg-bg-card/95 backdrop-blur-sm border border-accent-red/50 rounded-lg p-3 font-mono text-xs z-20">
+        <div className="space-y-1">
+          <div className="text-accent-red uppercase tracking-wider text-[10px] mb-2">Mission Status</div>
+          <div className="text-text-secondary">
+            Targets: <span className="text-accent-red font-bold">{leads.length}</span>
+          </div>
+          <div className="text-text-secondary">
+            Radius: <span className="text-white">{radius} km</span>
           </div>
           <div className="text-text-secondary">
             Location: <span className="text-white">{location || 'N/A'}</span>
           </div>
+          {isScanning && (
+            <div className="mt-2 pt-2 border-t border-accent-red/30">
+              <div className="text-accent-red animate-pulse">● SCANNING ACTIVE</div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Right HUD - Lead Stats */}
+      {leads.length > 0 && (
+        <div className="absolute top-4 right-4 bg-bg-card/95 backdrop-blur-sm border border-border-dark rounded-lg p-3 font-mono text-xs z-20">
+          <div className="space-y-1">
+            <div className="text-text-secondary uppercase tracking-wider text-[10px] mb-2">Target Analysis</div>
+            <div className="text-text-secondary">
+              High Value: <span className="text-accent-red font-bold">
+                {leads.filter((l) => l.score > 80).length}
+              </span>
+            </div>
+            <div className="text-text-secondary">
+              Medium: <span className="text-yellow-400 font-bold">
+                {leads.filter((l) => l.score > 60 && l.score <= 80).length}
+              </span>
+            </div>
+            <div className="text-text-secondary">
+              Low: <span className="text-accent-cyan font-bold">
+                {leads.filter((l) => l.score <= 60).length}
+              </span>
+            </div>
+            <div className="mt-2 pt-2 border-t border-border-dark">
+              <div className="text-text-secondary text-[10px]">
+                Avg Score: <span className="text-white font-bold">
+                  {Math.round(leads.reduce((acc, l) => acc + l.score, 0) / leads.length)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Corner Indicators */}
+      <div className="absolute top-0 left-0 w-20 h-20 border-t-2 border-l-2 border-accent-cyan/50 z-20" />
+      <div className="absolute top-0 right-0 w-20 h-20 border-t-2 border-r-2 border-accent-cyan/50 z-20" />
+      <div className="absolute bottom-0 left-0 w-20 h-20 border-b-2 border-l-2 border-accent-cyan/50 z-20" />
+      <div className="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-accent-cyan/50 z-20" />
     </div>
   );
 }
