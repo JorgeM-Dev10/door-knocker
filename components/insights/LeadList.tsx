@@ -14,7 +14,7 @@ export default function LeadList({ leads, onLeadHover }: LeadListProps) {
   const getStatusColor = (estado: Lead['estado']) => {
     switch (estado) {
       case 'Nuevo':
-        return 'bg-gray-800/20 text-gray-400 border-gray-700/50';
+        return 'bg-sleek-black/20 text-text-secondary border-sleek-black/50';
       case 'Pendiente':
         return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50';
       case 'Calificado':

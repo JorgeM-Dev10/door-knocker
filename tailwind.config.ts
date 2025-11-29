@@ -15,8 +15,11 @@ const config: Config = {
         'accent-red': '#ff3b3b',
         'accent-red-light': '#ff4b4b',
         'text-secondary': '#d8d8d8',
-        'accent-cyan': '#1a1a1a', // Changed from cyan to sleek black
-        'accent-cyan-light': '#2a2a2a', // Lighter sleek black variant
+        'accent-cyan': '#0a0a0a', // Sleek black
+        'accent-cyan-light': '#1a1a1a', // Lighter sleek black variant
+        'sleek-black': '#0a0a0a',
+        'sleek-black-light': '#1a1a1a',
+        'sleek-black-lighter': '#2a2a2a',
         'border-dark': '#1b1f2a',
       },
       fontFamily: {
