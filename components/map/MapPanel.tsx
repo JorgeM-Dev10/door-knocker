@@ -79,12 +79,14 @@ function createGridLines(center: { lat: number; lng: number }, radiusKm: number)
 
 // Función para generar líneas de latitud/longitud globales (tácticas)
 function createGlobalGridLines() {
-  const lines: Array<{ type: 'Feature'; geometry: { type: 'LineString'; coordinates: [number, number][] } }> = [];
+  const lines: Array<{ type: 'Feature'; geometry: { type: 'LineString'; coordinates: [number, number][] }; properties?: { major?: boolean } }> = [];
   
-  // Líneas de latitud principales (cada 30 grados)
-  for (let lat = -90; lat <= 90; lat += 30) {
+  // Líneas de latitud principales (cada 15 grados para más detalle)
+  for (let lat = -90; lat <= 90; lat += 15) {
+    const isMajor = lat % 30 === 0 || lat === 0; // Líneas principales cada 30° y el ecuador
     lines.push({
       type: 'Feature',
+      properties: { major: isMajor },
       geometry: {
         type: 'LineString',
         coordinates: [
@@ -95,10 +97,12 @@ function createGlobalGridLines() {
     });
   }
   
-  // Líneas de longitud principales (cada 30 grados)
-  for (let lng = -180; lng <= 180; lng += 30) {
+  // Líneas de longitud principales (cada 15 grados)
+  for (let lng = -180; lng <= 180; lng += 15) {
+    const isMajor = lng % 30 === 0 || lng === 0; // Líneas principales cada 30° y el meridiano de Greenwich
     lines.push({
       type: 'Feature',
+      properties: { major: isMajor },
       geometry: {
         type: 'LineString',
         coordinates: [
@@ -119,7 +123,7 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
   const [viewState, setViewState] = useState({
     longitude: center?.lng || 0, // Centro del mundo
     latitude: center?.lat || 20, // Latitud media para vista global
-    zoom: center ? 6 : 1.5, // Zoom global inicial (1.5 muestra todo el mundo), más cercano si hay centro
+    zoom: center ? 6 : 1.2, // Zoom global inicial (1.2 muestra todo el mundo mejor), más cercano si hay centro
     pitch: 0,
     bearing: 0,
   });
@@ -140,7 +144,7 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
         ...prev,
         longitude: 0,
         latitude: 20,
-        zoom: 1.5,
+        zoom: 1.2,
       }));
     }
   }, [center]);
@@ -170,6 +174,24 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
     ? `${center.lat >= 0 ? center.lat.toFixed(4) + '°N' : Math.abs(center.lat).toFixed(4) + '°S'}, ${center.lng >= 0 ? center.lng.toFixed(4) + '°E' : Math.abs(center.lng).toFixed(4) + '°W'}`
     : 'N/A';
 
+  // Determinar hemisferio y región aproximada
+  const getHemisphere = (lat: number, lng: number) => {
+    const hemisphere = lat >= 0 ? 'Norte' : 'Sur';
+    let region = 'Océano';
+    
+    // Regiones aproximadas
+    if (lat >= 35 && lat <= 70 && lng >= -10 && lng <= 40) region = 'Europa';
+    else if (lat >= 25 && lat <= 50 && lng >= -125 && lng <= -65) region = 'Norteamérica';
+    else if (lat >= -35 && lat <= 15 && lng >= -80 && lng <= -35) region = 'Sudamérica';
+    else if (lat >= -35 && lat <= 35 && lng >= 100 && lng <= 150) region = 'Asia-Pacífico';
+    else if (lat >= -35 && lat <= 35 && lng >= 20 && lng <= 50) region = 'Medio Oriente';
+    else if (lat >= -35 && lat <= 35 && lng >= -20 && lng <= 55) region = 'África';
+    
+    return { hemisphere, region };
+  };
+
+  const worldInfo = center ? getHemisphere(center.lat, center.lng) : null;
+
   return (
     <div className="relative h-full bg-bg-card rounded-lg border border-border-dark overflow-hidden">
       {/* Map */}
@@ -178,16 +200,34 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
         onMove={(evt) => setViewState(evt.viewState)}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN || 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'}
         style={{ width: '100%', height: '100%' }}
-        mapStyle="mapbox://styles/mapbox/satellite-streets-v12"
+        mapStyle="mapbox://styles/mapbox/dark-v11"
         attributionControl={false}
         projection={{ name: 'globe' }}
         minZoom={1}
         maxZoom={15}
       >
-        {/* Global Grid Lines (Lat/Lng) */}
-        <Source id="global-grid" type="geojson" data={globalGridData}>
+        {/* Global Grid Lines (Lat/Lng) - Major Lines */}
+        <Source id="global-grid-major" type="geojson" data={{
+          type: 'FeatureCollection',
+          features: globalGridData.features.filter(f => f.properties?.major),
+        }}>
           <Layer
-            id="global-grid-lines"
+            id="global-grid-major-lines"
+            type="line"
+            paint={{
+              'line-color': 'rgba(62, 242, 255, 0.4)',
+              'line-width': 1,
+            }}
+          />
+        </Source>
+
+        {/* Global Grid Lines (Lat/Lng) - Minor Lines */}
+        <Source id="global-grid-minor" type="geojson" data={{
+          type: 'FeatureCollection',
+          features: globalGridData.features.filter(f => !f.properties?.major),
+        }}>
+          <Layer
+            id="global-grid-minor-lines"
             type="line"
             paint={{
               'line-color': 'rgba(62, 242, 255, 0.15)',
@@ -318,15 +358,23 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
         ))}
       </Map>
 
-      {/* Tactical Grid Overlay (CSS) */}
+      {/* Tactical Grid Overlay (CSS) - Enhanced */}
       <div
         className="absolute inset-0 pointer-events-none z-10"
         style={{
           backgroundImage: `
-            linear-gradient(rgba(62, 242, 255, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(62, 242, 255, 0.1) 1px, transparent 1px)
+            linear-gradient(rgba(62, 242, 255, 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(62, 242, 255, 0.08) 1px, transparent 1px)
           `,
-          backgroundSize: '40px 40px',
+          backgroundSize: '60px 60px',
+        }}
+      />
+      
+      {/* Additional overlay for depth */}
+      <div
+        className="absolute inset-0 pointer-events-none z-9"
+        style={{
+          background: 'radial-gradient(circle at center, transparent 0%, rgba(5, 6, 10, 0.3) 100%)',
         }}
       />
 
@@ -369,15 +417,25 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
       {/* Top HUD - Coordinates & Info */}
       <div className="absolute top-4 left-4 bg-bg-card/95 backdrop-blur-sm border border-accent-cyan/50 rounded-lg p-3 font-mono text-xs z-20">
         <div className="space-y-1">
-          <div className="text-accent-cyan uppercase tracking-wider text-[10px] mb-2">Tactical Grid</div>
+          <div className="text-accent-cyan uppercase tracking-wider text-[10px] mb-2">World Grid</div>
           <div className="text-text-secondary">
             Coords: <span className="text-white font-bold">{coordinates}</span>
           </div>
+          {worldInfo && (
+            <>
+              <div className="text-text-secondary">
+                Region: <span className="text-white">{worldInfo.region}</span>
+              </div>
+              <div className="text-text-secondary">
+                Hemisphere: <span className="text-white">{worldInfo.hemisphere}</span>
+              </div>
+            </>
+          )}
           <div className="text-text-secondary">
-            Zoom: <span className="text-white">{Math.round(viewState.zoom)}x</span>
+            Zoom: <span className="text-white">{viewState.zoom.toFixed(1)}x</span>
           </div>
           <div className="text-text-secondary">
-            Bearing: <span className="text-white">0°</span>
+            Bearing: <span className="text-white">{Math.round(viewState.bearing)}°</span>
           </div>
         </div>
       </div>
