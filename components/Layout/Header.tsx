@@ -25,13 +25,20 @@ export default function Header() {
     <header className="w-full border-b border-border-dark bg-bg-card px-6 py-4">
       <div className="flex items-center justify-between">
         {/* Logo */}
-        <div className="flex flex-col">
-          <span className="text-[10px] uppercase tracking-wider text-text-secondary font-display">
-            SAPIENS LABORATORIES
-          </span>
-          <span className="text-2xl font-bold uppercase tracking-wider text-white font-display">
-            DOOR KNOCKER
-          </span>
+        <div className="flex items-center gap-4">
+          <img 
+            src="/logo.png" 
+            alt="Sapiens Laboratories" 
+            className="h-12 w-auto"
+          />
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase tracking-wider text-text-secondary font-display">
+              SAPIENS LABORATORIES
+            </span>
+            <span className="text-2xl font-bold uppercase tracking-wider text-white font-display">
+              DOOR KNOCKER
+            </span>
+          </div>
         </div>
 
         {/* Status & Time */}

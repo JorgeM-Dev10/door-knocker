@@ -41,7 +41,7 @@ export default function StatsPanel({ leads }: StatsPanelProps) {
             <div className="text-xs uppercase tracking-wider text-text-secondary mb-1">
               High Score
             </div>
-            <div className="text-2xl font-bold text-accent-cyan">{highScorePercentage}%</div>
+            <div className="text-2xl font-bold text-gray-400">{highScorePercentage}%</div>
           </div>
         </div>
 

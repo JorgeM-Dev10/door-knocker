@@ -227,7 +227,7 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
             id="global-grid-major-lines"
             type="line"
             paint={{
-              'line-color': 'rgba(62, 242, 255, 0.4)',
+              'line-color': 'rgba(55, 65, 81, 0.4)',
               'line-width': 1,
             }}
           />
@@ -242,7 +242,7 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
             id="global-grid-minor-lines"
             type="line"
             paint={{
-              'line-color': 'rgba(62, 242, 255, 0.15)',
+              'line-color': 'rgba(55, 65, 81, 0.15)',
               'line-width': 0.5,
             }}
           />
@@ -255,7 +255,7 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
               id="grid-lines"
               type="line"
               paint={{
-                'line-color': 'rgba(62, 242, 255, 0.3)',
+                'line-color': 'rgba(55, 65, 81, 0.3)',
                 'line-width': 1,
                 'line-dasharray': [2, 2],
               }}
@@ -334,7 +334,7 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
                 className={`absolute inset-0 w-6 h-6 rounded-full border-2 transition-all ${
                   hoveredLead?.id === lead.id
                     ? 'border-accent-red animate-pulse'
-                    : 'border-accent-cyan/50'
+                    : 'border-gray-700/50'
                 }`}
                 style={{
                   transform: 'translate(-50%, -50%)',
@@ -349,13 +349,13 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
                     ? 'bg-accent-red glow-red'
                     : lead.score > 60
                     ? 'bg-yellow-500'
-                    : 'bg-accent-cyan'
+                    : 'bg-gray-800'
                 }`}
                 style={{
                   boxShadow:
                     hoveredLead?.id === lead.id
                       ? '0 0 12px rgba(255, 59, 59, 1), 0 0 24px rgba(255, 59, 59, 0.6)'
-                      : '0 0 6px rgba(62, 242, 255, 0.6), 0 0 12px rgba(62, 242, 255, 0.3)',
+                      : '0 0 6px rgba(55, 65, 81, 0.6), 0 0 12px rgba(55, 65, 81, 0.3)',
                 }}
               />
               {/* Score Label (appears on hover) */}
@@ -375,8 +375,8 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
         className="absolute inset-0 pointer-events-none z-10"
         style={{
           backgroundImage: `
-            linear-gradient(rgba(62, 242, 255, 0.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(62, 242, 255, 0.08) 1px, transparent 1px)
+            linear-gradient(rgba(55, 65, 81, 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(55, 65, 81, 0.08) 1px, transparent 1px)
           `,
           backgroundSize: '60px 60px',
         }}
@@ -427,9 +427,9 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
       )}
 
       {/* Top HUD - Coordinates & Info */}
-      <div className="absolute top-4 left-4 bg-bg-card/95 backdrop-blur-sm border border-accent-cyan/50 rounded-lg p-3 font-mono text-xs z-20">
+      <div className="absolute top-4 left-4 bg-bg-card/95 backdrop-blur-sm border border-gray-700/50 rounded-lg p-3 font-mono text-xs z-20">
         <div className="space-y-1">
-          <div className="text-accent-cyan uppercase tracking-wider text-[10px] mb-2">World Grid</div>
+          <div className="text-gray-400 uppercase tracking-wider text-[10px] mb-2">World Grid</div>
           <div className="text-text-secondary">
             Coords: <span className="text-white font-bold">{coordinates}</span>
           </div>
@@ -489,7 +489,7 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
               </span>
             </div>
             <div className="text-text-secondary">
-              Low: <span className="text-accent-cyan font-bold">
+              Low: <span className="text-gray-400 font-bold">
                 {leads.filter((l) => l.score <= 60).length}
               </span>
             </div>
@@ -505,10 +505,10 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
       )}
 
       {/* Corner Indicators */}
-      <div className="absolute top-0 left-0 w-20 h-20 border-t-2 border-l-2 border-accent-cyan/50 z-20" />
-      <div className="absolute top-0 right-0 w-20 h-20 border-t-2 border-r-2 border-accent-cyan/50 z-20" />
-      <div className="absolute bottom-0 left-0 w-20 h-20 border-b-2 border-l-2 border-accent-cyan/50 z-20" />
-      <div className="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-accent-cyan/50 z-20" />
+      <div className="absolute top-0 left-0 w-20 h-20 border-t-2 border-l-2 border-gray-700/50 z-20" />
+      <div className="absolute top-0 right-0 w-20 h-20 border-t-2 border-r-2 border-gray-700/50 z-20" />
+      <div className="absolute bottom-0 left-0 w-20 h-20 border-b-2 border-l-2 border-gray-700/50 z-20" />
+      <div className="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-gray-700/50 z-20" />
 
       {/* Error Message */}
       {mapError && (

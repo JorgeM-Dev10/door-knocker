@@ -34,7 +34,7 @@ export default function ConsoleLog({ logs }: ConsoleLogProps) {
           logs.map((log, index) => (
             <div
               key={index}
-              className="text-accent-cyan mb-1 animate-pulse"
+              className="text-gray-400 mb-1 animate-pulse"
               style={{ animationDuration: '0.5s', animationDelay: `${index * 0.1}s` }}
             >
               {log}
