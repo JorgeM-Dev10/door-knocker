@@ -116,7 +116,7 @@ export default function Home() {
           </div>
 
           {/* Center Column - Map */}
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-5 min-h-[500px]">
             <MapPanel
               center={mapCenter}
               radius={radius}

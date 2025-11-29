@@ -193,7 +193,7 @@ export default function MapPanel({ center, radius, leads, isScanning, location }
   const worldInfo = center ? getHemisphere(center.lat, center.lng) : null;
 
   return (
-    <div className="relative h-full bg-bg-card rounded-lg border border-border-dark overflow-hidden">
+    <div className="relative h-full w-full min-h-[500px] bg-bg-card rounded-lg border border-border-dark overflow-hidden">
       {/* Map */}
       <Map
         {...viewState}
