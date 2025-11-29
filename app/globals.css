@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@layer base {
+  body {
+    @apply bg-bg-primary text-text-secondary font-sans;
+  }
+}
+
+@layer utilities {
+  .text-glow-red {
+    text-shadow: 0 0 10px rgba(255, 59, 59, 0.5),
+                0 0 20px rgba(255, 59, 59, 0.3);
+  }
+  
+  .glow-red {
+    box-shadow: 0 0 10px rgba(255, 59, 59, 0.5),
+                0 0 20px rgba(255, 59, 59, 0.3),
+                0 0 30px rgba(255, 59, 59, 0.1);
+  }
+  
+  .glow-red-strong {
+    box-shadow: 0 0 15px rgba(255, 59, 59, 0.8),
+                0 0 30px rgba(255, 59, 59, 0.5),
+                0 0 45px rgba(255, 59, 59, 0.2);
+  }
+  
+  .border-glow-red {
+    border-color: rgba(255, 59, 59, 0.5);
+    box-shadow: 0 0 10px rgba(255, 59, 59, 0.3);
+  }
+}
+
