@@ -13,6 +13,11 @@ export async function GET() {
     return NextResponse.json(leads);
   } catch (error) {
     console.error('Error fetching leads:', error);
+    // Si es un error de Prisma Client no generado, retornar array vacío
+    if (error instanceof Error && (error.message.includes('Prisma') || error.message.includes('generated'))) {
+      console.warn('Prisma Client not generated, returning empty array');
+      return NextResponse.json([]);
+    }
     return NextResponse.json({ error: 'Error al obtener leads' }, { status: 500 });
   }
 }
