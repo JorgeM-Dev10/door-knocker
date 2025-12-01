@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Layout/Header';
 import MissionForm from '@/components/control/MissionForm';
 import ConsoleLog from '@/components/control/ConsoleLog';
@@ -8,6 +8,8 @@ import MapPanel from '@/components/map/MapPanel';
 import StatsPanel from '@/components/insights/StatsPanel';
 import LeadList from '@/components/insights/LeadList';
 import MissionsHistory from '@/components/insights/MissionsHistory';
+import EditLeadModal from '@/components/insights/EditLeadModal';
+import AIChat from '@/components/chat/AIChat';
 import { generateLeads, geocodeLocation } from '@/lib/generateLeads';
 import type { Lead } from '@/lib/generateLeads';
 import type { Mission } from '@/lib/types';
@@ -23,6 +25,84 @@ export default function Home() {
   const [missions, setMissions] = useState<Mission[]>([]);
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null);
   const [hoveredLead, setHoveredLead] = useState<Lead | null>(null);
+  const [editingLead, setEditingLead] = useState<Lead | null>(null);
+  const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
+
+  // Cargar leads desde la base de datos al iniciar
+  useEffect(() => {
+    loadLeads();
+    loadMissions();
+  }, []);
+
+  const loadLeads = async () => {
+    try {
+      const response = await fetch('/api/leads');
+      const data = await response.json();
+      if (response.ok) {
+        setLeads(data);
+      }
+    } catch (error) {
+      console.error('Error loading leads:', error);
+    }
+  };
+
+  const loadMissions = async () => {
+    try {
+      const response = await fetch('/api/missions');
+      const data = await response.json();
+      if (response.ok) {
+        setMissions(data);
+      }
+    } catch (error) {
+      console.error('Error loading missions:', error);
+    }
+  };
+
+  const saveLeadsToDB = async (leadsToSave: Lead[]) => {
+    try {
+      await Promise.all(
+        leadsToSave.map((lead) =>
+          fetch('/api/leads', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(lead),
+          })
+        )
+      );
+      await loadLeads(); // Recargar desde DB
+    } catch (error) {
+      console.error('Error saving leads:', error);
+    }
+  };
+
+  const handleEditLead = async (lead: Lead) => {
+    try {
+      const response = await fetch(`/api/leads/${lead.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(lead),
+      });
+      if (response.ok) {
+        await loadLeads();
+        setEditingLead(null);
+      }
+    } catch (error) {
+      console.error('Error updating lead:', error);
+    }
+  };
+
+  const handleDeleteLead = async (leadId: string) => {
+    try {
+      const response = await fetch(`/api/leads/${leadId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        await loadLeads();
+      }
+    } catch (error) {
+      console.error('Error deleting lead:', error);
+    }
+  };
 
   const addLog = (message: string) => {
     const now = new Date();
@@ -53,7 +133,7 @@ export default function Home() {
     }, 1000);
 
     // Paso 3: Geocodificación y generación de leads
-    setTimeout(() => {
+    setTimeout(async () => {
       const center = geocodeLocation(location);
       if (center) {
         setMapCenter(center);
@@ -61,6 +141,10 @@ export default function Home() {
         generatedLeadsCount = generatedLeads.length;
         setLeads(generatedLeads);
         addLog(`${generatedLeadsCount} posibles objetivos encontrados`);
+        
+        // Guardar leads en la base de datos
+        await saveLeadsToDB(generatedLeads);
+        addLog('Leads guardados en la base de datos');
       } else {
         addLog('Error: No se pudo geocodificar la ubicación');
       }
@@ -71,16 +155,25 @@ export default function Home() {
       addLog('Escaneo completado');
       setIsScanning(false);
 
-      // Guardar misión
-      const newMission: Mission = {
-        id: `mission-${Date.now()}`,
-        industria: industry,
-        ubicacion: location,
-        leadsCount: generatedLeadsCount || resultsCount,
-        fecha: new Date(),
-        timestamp: Date.now(),
-      };
-      setMissions((prev) => [...prev, newMission]);
+      // Guardar misión en la base de datos
+      setTimeout(async () => {
+        try {
+          const response = await fetch('/api/missions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              industria: industry,
+              ubicacion: location,
+              leadsCount: generatedLeadsCount || resultsCount,
+            }),
+          });
+          if (response.ok) {
+            await loadMissions();
+          }
+        } catch (error) {
+          console.error('Error saving mission:', error);
+        }
+      }, 100);
     }, 2500);
   };
 
@@ -129,11 +222,25 @@ export default function Home() {
           {/* Right Column - Insights */}
           <div className="lg:col-span-4 space-y-6 overflow-y-auto">
             <StatsPanel leads={leads} />
-            <LeadList leads={leads} onLeadHover={setHoveredLead} />
+            <LeadList 
+              leads={leads} 
+              onLeadHover={setHoveredLead}
+              onEdit={setEditingLead}
+              onDelete={handleDeleteLead}
+            />
+            <AIChat leads={leads} selectedLeadIds={selectedLeadIds} />
             <MissionsHistory missions={missions} />
           </div>
         </div>
       </main>
+
+      {/* Edit Lead Modal */}
+      <EditLeadModal
+        lead={editingLead}
+        isOpen={!!editingLead}
+        onClose={() => setEditingLead(null)}
+        onSave={handleEditLead}
+      />
     </div>
   );
 }

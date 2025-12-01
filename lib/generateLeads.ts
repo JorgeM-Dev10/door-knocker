@@ -124,3 +124,4 @@ export function geocodeLocation(location: string): CenterPoint | null {
   return { lat: 25.6866, lng: -100.3161 };
 }
 
+

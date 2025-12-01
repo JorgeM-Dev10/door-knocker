@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Lead {
+  id        String   @id @default(cuid())
+  nombre    String
+  industria String
+  direccion String
+  lat       Float
+  lng       Float
+  score     Int
+  estado    String   // 'Nuevo' | 'Pendiente' | 'Calificado'
+  email     String?
+  telefono  String?
+  notas     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  contacts Contact[]
+  chatMessages ChatMessage[]
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  leadId   String
+  lead     Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  email     String
+  nombre    String
+  asunto    String?
+  mensaje   String?
+  enviado   Boolean  @default(false)
+  enviadoAt DateTime?
+  createdAt DateTime @default(now())
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  leadId   String?
+  lead     Lead?    @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  role     String   // 'user' | 'assistant'
+  content  String
+  metadata String?  // JSON string for additional data
+  createdAt DateTime @default(now())
+}
+
+model Mission {
+  id          String   @id @default(cuid())
+  industria   String
+  ubicacion   String
+  leadsCount  Int
+  fecha       DateTime @default(now())
+  createdAt   DateTime @default(now())
+}
+

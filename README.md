@@ -62,3 +62,4 @@ La aplicación generará leads aleatorios dentro del radio especificado y los mo
 - La geocodificación usa ubicaciones predefinidas para algunas ciudades comunes
 - En producción, se recomienda integrar APIs reales de geocodificación y scraping
 
+

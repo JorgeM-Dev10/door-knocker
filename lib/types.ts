@@ -19,3 +19,4 @@ export interface ScanState {
   mapCenter: { lat: number; lng: number } | null;
 }
 
+
