@@ -21,9 +21,9 @@ export default function EditLeadModal({ lead, isOpen, onClose, onSave }: EditLea
         direccion: lead.direccion,
         score: lead.score,
         estado: lead.estado,
-        email: (lead as any).email || '',
-        telefono: (lead as any).telefono || '',
-        notas: (lead as any).notas || '',
+        email: lead.email || '',
+        telefono: lead.telefono || '',
+        notas: lead.notas || '',
       });
     }
   }, [lead]);

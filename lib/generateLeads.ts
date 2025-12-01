@@ -7,6 +7,9 @@ export interface Lead {
   lng: number;
   score: number;
   estado: 'Nuevo' | 'Pendiente' | 'Calificado';
+  email?: string;
+  telefono?: string;
+  notas?: string;
 }
 
 interface CenterPoint {
