@@ -20,7 +20,7 @@ export default function MissionsHistory({ missions }: MissionsHistoryProps) {
   const recentMissions = missions.slice(-3).reverse();
 
   return (
-    <div className="bg-bg-card rounded-lg border border-border-dark p-6">
+    <div className="bg-gradient-to-br from-sleek-black via-bg-card to-sleek-black-light rounded-lg border border-border-dark/50 p-4 sm:p-6 shadow-lg">
       <h2 className="text-lg font-bold uppercase tracking-wider text-white mb-4 font-display">
         Last Missions
       </h2>
@@ -34,7 +34,7 @@ export default function MissionsHistory({ missions }: MissionsHistoryProps) {
           {recentMissions.map((mission) => (
             <div
               key={mission.id}
-              className="p-3 bg-bg-card-alt rounded border border-border-dark"
+              className="p-3 bg-gradient-to-r from-sleek-black-light to-sleek-black rounded border border-border-dark/50"
             >
               <div className="grid grid-cols-2 gap-2 text-xs mb-2">
                 <div>

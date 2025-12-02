@@ -6,8 +6,18 @@
 
 @layer base {
   body {
-    @apply bg-bg-primary text-text-secondary font-sans;
+    @apply text-text-secondary font-sans;
+    background: linear-gradient(135deg, #000000 0%, #05060A 25%, #000000 50%, #0a0a0a 75%, #000000 100%);
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+    min-height: 100vh;
   }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 @layer utilities {

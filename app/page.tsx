@@ -178,21 +178,21 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-bg-primary flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Header />
 
       {/* Agent Label */}
-      <div className="px-6 py-2 border-b border-border-dark">
+      <div className="px-4 sm:px-6 py-2 border-b border-border-dark/50 bg-gradient-to-r from-sleek-black/50 to-transparent">
         <span className="text-xs uppercase tracking-wider text-text-secondary font-display">
           AGENT: PROSPECTION INTELLIGENCE MODULE
         </span>
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-180px)]">
+      <main className="flex-1 p-3 sm:p-4 md:p-6">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-3 sm:gap-4 md:gap-6 h-[calc(100vh-180px)]">
           {/* Left Column - Control Panel */}
-          <div className="lg:col-span-3 space-y-6 overflow-y-auto">
+          <div className="xl:col-span-3 space-y-3 sm:space-y-4 md:space-y-6 overflow-y-auto">
             <MissionForm
               industry={industry}
               location={location}
@@ -209,7 +209,7 @@ export default function Home() {
           </div>
 
           {/* Center Column - Map */}
-          <div className="lg:col-span-5 min-h-[500px]">
+          <div className="xl:col-span-5 min-h-[400px] sm:min-h-[500px] md:min-h-[600px]">
             <MapPanel
               center={mapCenter}
               radius={radius}
@@ -220,7 +220,7 @@ export default function Home() {
           </div>
 
           {/* Right Column - Insights */}
-          <div className="lg:col-span-4 space-y-6 overflow-y-auto">
+          <div className="xl:col-span-4 space-y-3 sm:space-y-4 md:space-y-6 overflow-y-auto">
             <StatsPanel leads={leads} />
             <LeadList 
               leads={leads} 

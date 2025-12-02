@@ -27,7 +27,7 @@ export default function LeadList({ leads, onLeadHover, onEdit, onDelete }: LeadL
   };
 
   return (
-    <div className="bg-bg-card rounded-lg border border-border-dark p-6">
+    <div className="bg-gradient-to-br from-sleek-black via-bg-card to-sleek-black-light rounded-lg border border-border-dark/50 p-4 sm:p-6 shadow-lg">
       <h2 className="text-lg font-bold uppercase tracking-wider text-white mb-4 font-display">
         Lead List
       </h2>
@@ -49,7 +49,7 @@ export default function LeadList({ leads, onLeadHover, onEdit, onDelete }: LeadL
                 setHoveredLeadId(null);
                 onLeadHover?.(null);
               }}
-              className={`p-3 bg-bg-card-alt rounded border transition-all cursor-pointer ${
+              className={`p-3 bg-gradient-to-r from-sleek-black-light to-sleek-black rounded border border-border-dark/50 transition-all cursor-pointer ${
                 hoveredLeadId === lead.id
                   ? 'border-accent-red/50 glow-red'
                   : 'border-border-dark'

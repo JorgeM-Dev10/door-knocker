@@ -16,7 +16,7 @@ export default function ConsoleLog({ logs }: ConsoleLogProps) {
   }, [logs]);
 
   return (
-    <div className="mt-4 bg-bg-card rounded-lg border border-border-dark p-4">
+    <div className="mt-4 bg-gradient-to-br from-sleek-black via-bg-card to-sleek-black-light rounded-lg border border-border-dark/50 p-3 sm:p-4 shadow-lg">
       <h3 className="text-xs uppercase tracking-wider text-text-secondary mb-3 font-display">
         System Console
       </h3>

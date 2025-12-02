@@ -23,7 +23,7 @@ export default function StatsPanel({ leads }: StatsPanelProps) {
   const maxCount = Math.max(...scoreRanges.map((r) => r.count), 1);
 
   return (
-    <div className="bg-bg-card rounded-lg border border-border-dark p-6">
+    <div className="bg-gradient-to-br from-sleek-black via-bg-card to-sleek-black-light rounded-lg border border-border-dark/50 p-4 sm:p-6 shadow-lg">
       <h2 className="text-lg font-bold uppercase tracking-wider text-white mb-6 font-display">
         Scan Overview
       </h2>
@@ -31,13 +31,13 @@ export default function StatsPanel({ leads }: StatsPanelProps) {
       <div className="space-y-6">
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-bg-card-alt rounded border border-border-dark p-4">
+          <div className="bg-gradient-to-br from-sleek-black-light to-sleek-black rounded border border-border-dark/50 p-3 sm:p-4">
             <div className="text-xs uppercase tracking-wider text-text-secondary mb-1">
               Total Leads
             </div>
             <div className="text-2xl font-bold text-accent-red">{totalLeads}</div>
           </div>
-          <div className="bg-bg-card-alt rounded border border-border-dark p-4">
+          <div className="bg-gradient-to-br from-sleek-black-light to-sleek-black rounded border border-border-dark/50 p-3 sm:p-4">
             <div className="text-xs uppercase tracking-wider text-text-secondary mb-1">
               High Score
             </div>

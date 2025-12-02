@@ -22,27 +22,27 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="w-full border-b border-border-dark bg-bg-card px-6 py-4">
+    <header className="w-full border-b border-border-dark/50 bg-gradient-to-r from-sleek-black via-bg-card to-sleek-black px-4 sm:px-6 py-3 sm:py-4">
       <div className="flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <img 
             src="/logo.png" 
             alt="Sapiens Laboratories" 
-            className="h-12 w-auto"
+            className="h-8 sm:h-12 w-auto"
           />
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-wider text-text-secondary font-display">
+            <span className="text-[8px] sm:text-[10px] uppercase tracking-wider text-text-secondary font-display">
               SAPIENS LABORATORIES
             </span>
-            <span className="text-2xl font-bold uppercase tracking-wider text-white font-display">
+            <span className="text-lg sm:text-2xl font-bold uppercase tracking-wider text-white font-display">
               DOOR KNOCKER
             </span>
           </div>
         </div>
 
         {/* Status & Time */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2 sm:gap-6">
           {/* Status Badge */}
           <div className="flex items-center gap-2">
             <span className="text-xs uppercase tracking-wider text-text-secondary">
@@ -60,7 +60,7 @@ export default function Header() {
           </div>
 
           {/* Clock */}
-          <div className="flex items-center gap-2 px-3 py-1 bg-bg-card-alt rounded border border-border-dark">
+          <div className="flex items-center gap-2 px-2 sm:px-3 py-1 bg-gradient-to-r from-sleek-black-light to-sleek-black rounded border border-border-dark/50">
             <span className="text-xs uppercase tracking-wider text-text-secondary">
               TIME:
             </span>

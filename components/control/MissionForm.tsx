@@ -28,7 +28,7 @@ export default function MissionForm({
   onLaunchScan,
 }: MissionFormProps) {
   return (
-    <div className="bg-bg-card rounded-lg border border-border-dark p-6">
+    <div className="bg-gradient-to-br from-sleek-black via-bg-card to-sleek-black-light rounded-lg border border-border-dark/50 p-4 sm:p-6 shadow-lg">
       <h2 className="text-lg font-bold uppercase tracking-wider text-white mb-6 font-display">
         Mission Parameters
       </h2>
@@ -45,7 +45,7 @@ export default function MissionForm({
             onChange={(e) => onIndustryChange(e.target.value)}
             placeholder="Ej: restaurantes, dentistas..."
             disabled={isScanning}
-            className="w-full px-4 py-2.5 bg-bg-card-alt border border-border-dark rounded text-white placeholder:text-text-secondary/50 focus:outline-none focus:border-accent-red/50 focus:ring-1 focus:ring-accent-red/30 transition-all disabled:opacity-50"
+            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-sleek-black-light to-sleek-black border border-border-dark/50 rounded text-white text-sm sm:text-base placeholder:text-text-secondary/50 focus:outline-none focus:border-accent-red/50 focus:ring-1 focus:ring-accent-red/30 transition-all disabled:opacity-50"
           />
         </div>
 
@@ -60,7 +60,7 @@ export default function MissionForm({
             onChange={(e) => onLocationChange(e.target.value)}
             placeholder="Ej: Monterrey, Nuevo León"
             disabled={isScanning}
-            className="w-full px-4 py-2.5 bg-bg-card-alt border border-border-dark rounded text-white placeholder:text-text-secondary/50 focus:outline-none focus:border-accent-red/50 focus:ring-1 focus:ring-accent-red/30 transition-all disabled:opacity-50"
+            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-sleek-black-light to-sleek-black border border-border-dark/50 rounded text-white text-sm sm:text-base placeholder:text-text-secondary/50 focus:outline-none focus:border-accent-red/50 focus:ring-1 focus:ring-accent-red/30 transition-all disabled:opacity-50"
           />
         </div>
 

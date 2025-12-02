@@ -30,6 +30,7 @@ export default function AIChat({ leads, selectedLeadIds }: AIChatProps) {
   }, [messages]);
 
   const sendMessage = async () => {
+    // AI Assistant deshabilitado temporalmente - solo endpoints disponibles
     if (!input.trim() || isLoading) return;
 
     const userMessage: ChatMessage = {
@@ -42,6 +43,19 @@ export default function AIChat({ leads, selectedLeadIds }: AIChatProps) {
     setInput('');
     setIsLoading(true);
 
+    // Simular delay y mostrar mensaje de que está deshabilitado
+    setTimeout(() => {
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: 'El asistente de IA está temporalmente deshabilitado. Los endpoints están disponibles pero la conexión se configurará más adelante.',
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+      setIsLoading(false);
+    }, 1000);
+
+    // Código comentado para cuando se active la conexión
+    /*
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -68,10 +82,8 @@ export default function AIChat({ leads, selectedLeadIds }: AIChatProps) {
 
       setMessages((prev) => [...prev, assistantMessage]);
 
-      // Si hay una acción, procesarla
       if (data.action) {
         console.log('Action:', data.action);
-        // Aquí puedes agregar lógica para procesar acciones
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -84,6 +96,7 @@ export default function AIChat({ leads, selectedLeadIds }: AIChatProps) {
     } finally {
       setIsLoading(false);
     }
+    */
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -94,13 +107,13 @@ export default function AIChat({ leads, selectedLeadIds }: AIChatProps) {
   };
 
   return (
-    <div className="bg-bg-card rounded-lg border border-border-dark p-6 h-full flex flex-col">
-      <h2 className="text-lg font-bold uppercase tracking-wider text-white mb-4 font-display">
+    <div className="bg-gradient-to-br from-sleek-black via-bg-card to-sleek-black-light rounded-lg border border-border-dark/50 p-4 sm:p-6 h-full flex flex-col shadow-lg">
+      <h2 className="text-base sm:text-lg font-bold uppercase tracking-wider text-white mb-3 sm:mb-4 font-display">
         AI Assistant
       </h2>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto mb-4 space-y-3 min-h-[300px] max-h-[400px]">
+      <div className="flex-1 overflow-y-auto mb-3 sm:mb-4 space-y-2 sm:space-y-3 min-h-[200px] sm:min-h-[300px] max-h-[300px] sm:max-h-[400px]">
         {messages.length === 0 ? (
           <div className="text-text-secondary/50 text-sm text-center py-8">
             <p className="mb-2">💬 Chatea con el asistente de IA</p>
@@ -149,14 +162,15 @@ export default function AIChat({ leads, selectedLeadIds }: AIChatProps) {
           onKeyPress={handleKeyPress}
           placeholder="Escribe tu mensaje..."
           disabled={isLoading}
-          className="flex-1 px-4 py-2.5 bg-bg-card-alt border border-border-dark rounded text-white placeholder:text-text-secondary/50 focus:outline-none focus:border-accent-red/50 focus:ring-1 focus:ring-accent-red/30 transition-all disabled:opacity-50"
+          className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-sleek-black-light to-sleek-black border border-border-dark/50 rounded text-white text-sm sm:text-base placeholder:text-text-secondary/50 focus:outline-none focus:border-accent-red/50 focus:ring-1 focus:ring-accent-red/30 transition-all disabled:opacity-50"
         />
         <button
           onClick={sendMessage}
           disabled={isLoading || !input.trim()}
-          className="px-6 py-2.5 bg-accent-red text-white font-bold uppercase tracking-wider rounded glow-red hover:glow-red-strong transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-display"
+          className="px-4 sm:px-6 py-2 sm:py-2.5 bg-accent-red text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded glow-red hover:glow-red-strong transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-display"
         >
-          Enviar
+          <span className="hidden sm:inline">Enviar</span>
+          <span className="sm:hidden">→</span>
         </button>
       </div>
     </div>
