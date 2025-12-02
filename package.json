@@ -20,7 +20,8 @@
     "mapbox-gl": "^3.0.1",
     "@prisma/client": "^5.7.0",
     "openai": "^4.20.0",
-    "prisma": "^5.7.0"
+    "prisma": "^5.7.0",
+    "lucide-react": "^0.344.0"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
