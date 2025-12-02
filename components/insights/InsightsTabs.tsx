@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { BarChart3, Target, Bot, FileText } from 'lucide-react';
 import StatsPanel from './StatsPanel';
-import LeadList from './LeadList';
+import LeadsManager from '@/components/leads/LeadsManager';
 import AIChat from '@/components/chat/AIChat';
 import MissionsHistory from './MissionsHistory';
 import type { Lead } from '@/lib/generateLeads';
@@ -29,11 +30,11 @@ export default function InsightsTabs({
 }: InsightsTabsProps) {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
 
-  const tabs: { id: TabType; label: string; icon: string }[] = [
-    { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'leads', label: 'Leads', icon: '🎯' },
-    { id: 'ai', label: 'AI Assistant', icon: '🤖' },
-    { id: 'missions', label: 'Missions', icon: '📋' },
+  const tabs: { id: TabType; label: string; icon: React.ReactNode }[] = [
+    { id: 'overview', label: 'Overview', icon: <BarChart3 size={16} /> },
+    { id: 'leads', label: 'Leads', icon: <Target size={16} /> },
+    { id: 'ai', label: 'AI Assistant', icon: <Bot size={16} /> },
+    { id: 'missions', label: 'Missions', icon: <FileText size={16} /> },
   ];
 
   return (
@@ -51,7 +52,7 @@ export default function InsightsTabs({
             }`}
           >
             <span className="flex items-center justify-center gap-1.5 sm:gap-2">
-              <span className="text-sm sm:text-base">{tab.icon}</span>
+              <span className={activeTab === tab.id ? 'text-accent-red' : 'text-text-secondary/70'}>{tab.icon}</span>
               <span className="hidden sm:inline">{tab.label}</span>
               <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
             </span>
@@ -66,11 +67,12 @@ export default function InsightsTabs({
       <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 bg-gradient-to-b from-sleek-black/50 to-transparent">
         {activeTab === 'overview' && <StatsPanel leads={leads} />}
         {activeTab === 'leads' && (
-          <LeadList
+          <LeadsManager
             leads={leads}
             onLeadHover={onLeadHover}
             onEdit={onEdit}
             onDelete={onDelete}
+            onLeadsUpdate={() => window.location.reload()}
           />
         )}
         {activeTab === 'ai' && (

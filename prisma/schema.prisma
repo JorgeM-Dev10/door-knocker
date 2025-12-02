@@ -10,6 +10,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Folder {
+  id        String   @id @default(cuid())
+  nombre    String
+  color     String?  // Color opcional para la carpeta
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  leads Lead[]
+}
+
 model Lead {
   id        String   @id @default(cuid())
   nombre    String
@@ -22,6 +32,9 @@ model Lead {
   email     String?
   telefono  String?
   notas     String?
+  folderId  String?  // Carpeta a la que pertenece
+  folder    Folder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  order     Int?     // Orden dentro de la carpeta
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   

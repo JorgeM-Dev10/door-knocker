@@ -8,6 +8,7 @@ export async function GET() {
       orderBy: { score: 'desc' },
       include: {
         contacts: true,
+        folder: true,
       },
     });
     return NextResponse.json(leads);

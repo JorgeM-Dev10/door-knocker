@@ -46,6 +46,7 @@ export async function PUT(
         email: body.email,
         telefono: body.telefono,
         notas: body.notas,
+        folderId: body.folderId !== undefined ? body.folderId : undefined,
       },
     });
     return NextResponse.json(lead);
