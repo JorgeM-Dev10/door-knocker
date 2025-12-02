@@ -27,7 +27,7 @@ export default function LeadList({ leads, onLeadHover, onEdit, onDelete }: LeadL
   };
 
   return (
-    <div className="bg-gradient-to-br from-sleek-black via-bg-card to-sleek-black-light rounded-lg border border-border-dark/50 p-4 sm:p-6 shadow-lg">
+    <div className="h-full">
       <h2 className="text-lg font-bold uppercase tracking-wider text-white mb-4 font-display">
         Lead List
       </h2>
@@ -49,10 +49,10 @@ export default function LeadList({ leads, onLeadHover, onEdit, onDelete }: LeadL
                 setHoveredLeadId(null);
                 onLeadHover?.(null);
               }}
-              className={`p-3 bg-gradient-to-r from-sleek-black-light to-sleek-black rounded border border-border-dark/50 transition-all cursor-pointer ${
+              className={`p-3 bg-gradient-to-r from-sleek-black-light to-sleek-black rounded border transition-all duration-300 cursor-pointer hover:border-accent-red/30 hover:shadow-lg hover:shadow-accent-red/10 hover:scale-[1.02] ${
                 hoveredLeadId === lead.id
-                  ? 'border-accent-red/50 glow-red'
-                  : 'border-border-dark'
+                  ? 'border-accent-red/50 glow-red scale-[1.02]'
+                  : 'border-border-dark/50'
               }`}
             >
               <div className="flex items-start justify-between mb-2">

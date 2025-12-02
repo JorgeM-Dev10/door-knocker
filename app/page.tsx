@@ -5,11 +5,8 @@ import Header from '@/components/Layout/Header';
 import MissionForm from '@/components/control/MissionForm';
 import ConsoleLog from '@/components/control/ConsoleLog';
 import MapPanel from '@/components/map/MapPanel';
-import StatsPanel from '@/components/insights/StatsPanel';
-import LeadList from '@/components/insights/LeadList';
-import MissionsHistory from '@/components/insights/MissionsHistory';
 import EditLeadModal from '@/components/insights/EditLeadModal';
-import AIChat from '@/components/chat/AIChat';
+import InsightsTabs from '@/components/insights/InsightsTabs';
 import { generateLeads, geocodeLocation } from '@/lib/generateLeads';
 import type { Lead } from '@/lib/generateLeads';
 import type { Mission } from '@/lib/types';
@@ -220,16 +217,15 @@ export default function Home() {
           </div>
 
           {/* Right Column - Insights */}
-          <div className="xl:col-span-4 space-y-3 sm:space-y-4 md:space-y-6 overflow-y-auto">
-            <StatsPanel leads={leads} />
-            <LeadList 
-              leads={leads} 
+          <div className="xl:col-span-4 h-full">
+            <InsightsTabs
+              leads={leads}
+              missions={missions}
+              selectedLeadIds={selectedLeadIds}
               onLeadHover={setHoveredLead}
               onEdit={setEditingLead}
               onDelete={handleDeleteLead}
             />
-            <AIChat leads={leads} selectedLeadIds={selectedLeadIds} />
-            <MissionsHistory missions={missions} />
           </div>
         </div>
       </main>

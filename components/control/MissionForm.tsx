@@ -106,7 +106,7 @@ export default function MissionForm({
         <button
           onClick={onLaunchScan}
           disabled={isScanning || !industry.trim() || !location.trim()}
-          className="w-full py-3.5 bg-accent-red text-white font-bold uppercase tracking-wider rounded-lg glow-red hover:glow-red-strong transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98] font-display"
+          className="w-full py-3.5 bg-gradient-to-r from-accent-red to-accent-red-light text-white font-bold uppercase tracking-wider rounded-lg glow-red hover:glow-red-strong transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98] disabled:hover:scale-100 font-display"
         >
           {isScanning ? (
             <span className="flex items-center justify-center gap-2">
