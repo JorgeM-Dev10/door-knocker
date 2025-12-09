@@ -63,3 +63,5 @@ La aplicación generará leads aleatorios dentro del radio especificado y los mo
 - En producción, se recomienda integrar APIs reales de geocodificación y scraping
 
 
+
+

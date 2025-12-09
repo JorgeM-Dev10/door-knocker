@@ -92,3 +92,5 @@ npm run dev
 - El chat con IA requiere una API key de OpenAI válida
 - Si no tienes OpenAI API key, el chat funcionará pero con funcionalidad limitada
 
+
+

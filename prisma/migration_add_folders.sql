@@ -22,3 +22,5 @@ ALTER TABLE "Lead" ADD CONSTRAINT "Lead_folderId_fkey" FOREIGN KEY ("folderId") 
 -- Create index for better performance
 CREATE INDEX IF NOT EXISTS "Lead_folderId_idx" ON "Lead"("folderId");
 
+
+

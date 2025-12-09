@@ -69,3 +69,5 @@ CREATE INDEX IF NOT EXISTS "ChatMessage_leadId_idx" ON "ChatMessage"("leadId");
 CREATE INDEX IF NOT EXISTS "Lead_score_idx" ON "Lead"("score");
 CREATE INDEX IF NOT EXISTS "Lead_estado_idx" ON "Lead"("estado");
 
+
+

@@ -80,7 +80,7 @@ export default function InsightsTabs({
             <AIChat leads={leads} selectedLeadIds={selectedLeadIds} />
           </div>
         )}
-        {activeTab === 'missions' && <MissionsHistory missions={missions} />}
+        {activeTab === 'missions' && <MissionsHistory />}
       </div>
     </div>
   );
