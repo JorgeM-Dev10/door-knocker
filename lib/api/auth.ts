@@ -1,7 +1,7 @@
 import { BaseAPI } from "./base";
 import { authStorage } from "../storage";
 
-const baseUrl = 'https://visually-nearby-kitten.ngrok-free.app';
+const baseUrl = 'https://doorknocker-api.ranon-rat.work';
 
 /**
  * Response interface for GET /can-access

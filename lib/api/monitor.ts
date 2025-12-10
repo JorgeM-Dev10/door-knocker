@@ -4,7 +4,7 @@ import { DoorKnockerEventsEnum } from "../types/monitor";
 import type { Campaign } from "../types/campaigns";
 import type { CreateContactDto } from "../types/contacts";
 
-const baseUrl = 'https://visually-nearby-kitten.ngrok-free.app';
+const baseUrl = 'https://doorknocker-api.ranon-rat.work';
 
 /**
  * Parámetros para la conexión SSE del monitor

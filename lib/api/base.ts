@@ -1,10 +1,10 @@
 /**
- * https://visually-nearby-kitten.ngrok-free.app/
- */ 
+ * https://doorknocker-api.ranon-rat.work/
+ */
 
 import { authStorage } from "../storage";
 
-const baseUrl = 'https://visually-nearby-kitten.ngrok-free.app';
+const baseUrl = 'https://doorknocker-api.ranon-rat.work';
 
 function getBaseURL(): string {
     return baseUrl;
