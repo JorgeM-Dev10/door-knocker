@@ -71,3 +71,5 @@ CREATE INDEX IF NOT EXISTS "Lead_estado_idx" ON "Lead"("estado");
 
 
 
+
+

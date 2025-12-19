@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Header from '@/components/Layout/Header';
 import MissionForm from '@/components/control/MissionForm';
 import ConsoleLog from '@/components/control/ConsoleLog';
@@ -9,13 +8,10 @@ import MapPanel from '@/components/map/MapPanel';
 import EditLeadModal from '@/components/insights/EditLeadModal';
 import InsightsTabs from '@/components/insights/InsightsTabs';
 import { generateLeads, geocodeLocation } from '@/lib/generateLeads';
-import { authStorage } from '@/lib/storage';
-import { canAccess } from '@/lib/api/auth';
 import type { Lead } from '@/lib/generateLeads';
 import type { Mission } from '@/lib/types';
 
 export default function Home() {
-  const router = useRouter();
   const [industry, setIndustry] = useState('');
   const [location, setLocation] = useState('');
   const [radius, setRadius] = useState(10);
@@ -28,45 +24,12 @@ export default function Home() {
   const [hoveredLead, setHoveredLead] = useState<Lead | null>(null);
   const [editingLead, setEditingLead] = useState<Lead | null>(null);
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-  // Verificar autenticación al cargar
+  // Cargar leads desde la base de datos al iniciar
   useEffect(() => {
-    const checkAuth = async () => {
-      const apiKey = authStorage.Get();
-      
-      if (!apiKey) {
-        router.push('/login');
-        return;
-      }
-
-      try {
-        const access = await canAccess(apiKey);
-        if (!access.can_access) {
-          authStorage.Remove();
-          router.push('/login');
-          return;
-        }
-      } catch (error) {
-        console.error('Error verificando acceso:', error);
-        authStorage.Remove();
-        router.push('/login');
-        return;
-      }
-
-      setIsCheckingAuth(false);
-    };
-
-    checkAuth();
-  }, [router]);
-
-  // Cargar leads desde la base de datos al iniciar (solo si está autenticado)
-  useEffect(() => {
-    if (!isCheckingAuth) {
-      loadLeads();
-      loadMissions();
-    }
-  }, [isCheckingAuth]);
+    loadLeads();
+    loadMissions();
+  }, []);
 
   const loadLeads = async () => {
     try {
@@ -210,18 +173,6 @@ export default function Home() {
       }, 100);
     }, 2500);
   };
-
-  // Mostrar loading mientras se verifica autenticación
-  if (isCheckingAuth) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-sleek-black via-bg-primary to-sleek-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-accent-red border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-text-secondary text-sm">Verificando acceso...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col">

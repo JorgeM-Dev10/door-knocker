@@ -19,7 +19,7 @@ enum StatusCodes {
 
 /**
  * Base API function that automatically uses the API key stored in localStorage
- * The API key is saved in localStorage when the user logs in via /login page
+ * The API key can be set manually in localStorage using authStorage.Set()
  * 
  * @param endpoint - API endpoint (e.g., '/campaigns', '/contacts')
  * @param method - HTTP method ('GET', 'POST', 'PUT', 'DELETE')
@@ -27,22 +27,14 @@ enum StatusCodes {
  * @returns Promise with the response data
  */
 export async function BaseAPI<T>(endpoint: string, method: string, body?: any): Promise<T> {
-    // Obtener API key del localStorage (guardado durante el login)
+    // Obtener API key del localStorage si está disponible
     const token = authStorage.Get() || "";
-    
-    // Debug: verificar que el token existe
-    if (!token) {
-        console.error('⚠️ API_KEY no encontrado en localStorage. Redirigiendo a login...');
-        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-            authStorage.Remove();
-            window.location.href = '/login';
-        }
-        throw new Error('API_KEY no encontrado');
-    }
     
     // Preparar headers - el backend espera 'Authorization' no 'API_KEY'
     const headers = new Headers();
-    headers.append('Authorization', token);
+    if (token) {
+        headers.append('Authorization', token);
+    }
     headers.append('Content-Type', 'application/json');
     
     // Debug: verificar que el header se está configurando
@@ -60,17 +52,14 @@ export async function BaseAPI<T>(endpoint: string, method: string, body?: any): 
         body: body ? JSON.stringify(body) : undefined,
     });
     if (!response.ok) {
-        if (response.status === StatusCodes.UNAUTHORIZED && window.location.pathname !== "/login") {
-            authStorage.Remove();
-            window.location.href = "/login";
-
+        if (response.status === StatusCodes.UNAUTHORIZED) {
+            console.error("💥 Unauthorized - API key inválido o faltante");
         }
         if (response.status === StatusCodes.FORBIDDEN) {
             console.log("💥 Forbidden", response.json());
         }
         if (response.status === StatusCodes.NOT_FOUND) {
             console.log("💥 Not Found", response.json());
-
         }
     }
 
